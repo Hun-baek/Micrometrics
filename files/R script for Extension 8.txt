@@ -1,0 +1,74 @@
+library(readstata13)
+library(jtools)
+library(ggplot2)
+library(AER)
+library(estimatr)
+
+df <-read.dta13("data/Segregation_Alesina_Zhuravskaya_x_country.dta")
+
+
+
+Reg1 <- lm_robust(voice ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+             LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall, se_type = 'HC1',
+           data = df)
+Reg2 <- ivreg(voice ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+              LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall
+              |ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+              LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall +
+              ethnicity_instrument_C2_thresh,
+              data = df)
+Reg3 <- lm_robust(PolStab ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+           LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall, se_type = 'HC1',
+           data = df)
+Reg4 <- ivreg(PolStab ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall
+              |ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall +
+                ethnicity_instrument_C2_thresh,
+              data = df)
+Reg5 <- lm_robust(GovEffec ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+             LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall ,se_type = 'HC1',
+           data = df)
+Reg6 <- ivreg(GovEffec ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall
+              |ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall +
+                ethnicity_instrument_C2_thresh,
+              data = df)
+Reg7 <- lm_robust(RegQual ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                    LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall ,se_type = 'HC1',
+                  data = df)
+Reg8 <- ivreg(RegQual ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall
+              |ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall +
+                ethnicity_instrument_C2_thresh,
+              data = df)
+Reg9 <- lm_robust(RulLaw ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                    LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall ,se_type = 'HC1',
+                  data = df)
+Reg10 <- ivreg(RulLaw ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall
+              |ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall +
+                ethnicity_instrument_C2_thresh,
+              data = df)
+Reg11 <- lm_robust(ConCorr ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                    LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall ,se_type = 'HC1',
+                  data = df)
+Reg12 <- ivreg(ConCorr ~ ethnicity_C2 + ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall
+              |ethnicity_I + lnpopulation + lnGDP_pc+ protestants+muslims+catholics+latitude +
+                LOEnglish + LOGerman+ LOSocialist+ lnArea+ LOScandin + democ+ mtnall +
+                ethnicity_instrument_C2_thresh,
+              data = df)
+#Extension 6
+plot_summs(Reg1, Reg2, Reg3, Reg4, Reg5, Reg6, Reg7, Reg8, Reg9, Reg10, Reg11, Reg12, scale = TRUE, 
+           ci_level = 0.9, colors="Rainbow",
+           robust = list(FALSE, "HC1",FALSE, "HC1",FALSE, "HC1",FALSE, "HC1",FALSE, "HC1"),
+           model.names = c("Voice/OLS","Voice/2SLS","Political stability/OLS","Political Stability/2SLS",
+                           "Goverment effectivenes/OLS","Government effectiveness/2SLS",
+                           "Regulatory quality/OLS","Regulatory quality/2SLS","Rule fo law/OLS","Rule of law/2SLS",
+                           "Control of corruption/OLS","Control of corruption/2SLS"),
+           coefs = c("Ethnic Segregation"="ethnicity_C2"),
+           legend.title = "Depdent Var / Model")
